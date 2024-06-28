@@ -70,8 +70,7 @@ class LoginView(APIView):
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
             properties={
-                'username': openapi.Schema(type=openapi.TYPE_STRING, example='string'),
-                # 'email': openapi.Schema(type=openapi.TYPE_STRING, example='email@example.com'),
+                'username_or_email': openapi.Schema(type=openapi.TYPE_STRING, example='string'),
                 'password': openapi.Schema(type=openapi.TYPE_STRING, example='string'),
             },
             required=['password']
@@ -79,21 +78,18 @@ class LoginView(APIView):
         responses={201: UserCreateSerializer, 400: 'Bad Request'}
     )
     def post(self, request):
-        email = request.data.get("email", None)
-        username = request.data.get("username", None)
+        username_or_email = request.data.get("username_or_email")
         password = request.data.get("password")
 
-        if not (username or email) or not password:
+        if not username_or_email or not password:
             raise AuthenticationFailed(detail="Username or email and password are required", code=400)
 
-        if username:
-            user = User.objects.filter(username=username).first()
-            field = "username"
-        elif email:
-            user = User.objects.filter(email=email).first()
+        if "@" in username_or_email:
+            user = User.objects.filter(email=username_or_email).first()
             field = "email"
         else:
-            raise AuthenticationFailed(detail="Unknown error", code=400)
+            user = User.objects.filter(username=username_or_email).first()
+            field = "username"
 
         if user is None:
             raise AuthenticationFailed(detail=f"User with such {field} does not exist", code=400)
