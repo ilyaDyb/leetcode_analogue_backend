@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import ProblemsListView, ProblemView
+from .views import ProblemListView, ProblemRetrieveUpdateDestroyView, ProblemCreateView
 
 app_name = "main"
 
 urlpatterns = [
-    path('problems/', ProblemsListView.as_view(), name='problems'),
-    path('problem/', ProblemView.as_view(), name='problem'),
+    path('problems/', ProblemListView.as_view(), name='problems'),
+    path('problem/<int:id>/', ProblemRetrieveUpdateDestroyView.as_view(), name='problem'),
+    path('problem/', ProblemCreateView.as_view(), name='problem'),
 ]

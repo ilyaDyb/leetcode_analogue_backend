@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
 
     'main',
-    'users',
+    'auth_',
 ]
 
 REST_FRAMEWORK = {
@@ -182,4 +182,4 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "auth_.User"

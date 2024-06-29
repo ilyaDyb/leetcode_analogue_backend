@@ -1,6 +1,6 @@
 from django.db import models
 
-from core.users.models import User
+from core.auth_.models import User
 
 class Problem(models.Model):
     DIFFICULTY_CHOICES = [

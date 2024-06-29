@@ -3,8 +3,8 @@ from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework.exceptions import ValidationError
 
-from core.users.models import User
-from core.users.validators import validate_password
+from core.auth_.models import User
+from core.auth_.validators import validate_password
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

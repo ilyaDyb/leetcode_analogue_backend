@@ -14,8 +14,8 @@ from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
-from core.users.models import User
-from core.users.serializaters import UserCreateSerializer
+from core.auth_.models import User
+from core.auth_.serializaters import UserCreateSerializer
 from .serializaters import MyTokenObtainPairSerializer
 
 
@@ -30,19 +30,19 @@ class CustomJWTAuthentication(JWTAuthentication):
 class MyTokenObtaionPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-class BaseAuthenticate:
-    def __init__(self, headers: dict) -> None:
-        self.token = headers.get("Authorization", None)
+# class BaseAuthenticate:
+#     def __init__(self, headers: dict) -> None:
+#         self.token = headers.get("Authorization", None)
     
-    @property
-    def get_user_instance(self):
-        if not self.token:
-            raise AuthenticationFailed({"detail": "You cannot authenticate without authorization token"}, code=400)
-        token_str = self.token.split()[1]
-        token = AccessToken(token_str)
-        user_id = token["user_id"]
-        user_instance = User.objects.get(pk=user_id)
-        return user_instance
+#     @property
+#     def get_user_instance(self):
+#         if not self.token:
+#             raise AuthenticationFailed({"detail": "You cannot authenticate without authorization token"}, code=400)
+#         token_str = self.token.split()[1]
+#         token = AccessToken(token_str)
+#         user_id = token["user_id"]
+#         user_instance = User.objects.get(pk=user_id)
+#         return user_instance
     
 
 class RegisterView(APIView):
