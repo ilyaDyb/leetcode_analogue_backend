@@ -1,9 +1,9 @@
 from django.urls import path
-from . import views
+from .views import ProblemsListView, ProblemView
 
 app_name = "main"
 
 urlpatterns = [
-    path('test/', views.test_view, name='test'),
-    path('test-view/', views.TestApiView.as_view(), name='testviw'),
+    path('problems/', ProblemsListView.as_view(), name='problems'),
+    path('problem/', ProblemView.as_view(), name='problem'),
 ]

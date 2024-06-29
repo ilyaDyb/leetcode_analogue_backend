@@ -65,7 +65,6 @@ class RegisterView(APIView):
         return Response(serializer.data)
     
 class LoginView(APIView):
-    """Send username or email field"""
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,
