@@ -12,7 +12,10 @@ Project's stack
 * JWT
 * While not using:
 * Docker
-
+  
+app's design
+-------------------
+![creenshot of sample](https://github.com/ilyaDyb/leetcode_analogue_backend/blob/main/app's_Design.png)
 `If you are a recruiter and you are interested in me along with my project, please call or write, I can show all the functionality and explain why I used something here or somewhere else. My contacts: `
 1. Phone number: +79170760362
 2. Telegram: http://t.me/wicki7
