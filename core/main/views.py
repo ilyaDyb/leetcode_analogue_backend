@@ -1,12 +1,12 @@
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from core.auth_.permissions import CustomIsAdminPermission, CustomIsAuthenticatedPermission
-from core.main.models import Problem
-from core.main.serializers import ProblemSerializer
+from core.main.models import Problem, TestCase
+from core.main.serializers import ProblemSerializer, TestCaseSerializer
 
 
 class ProblemListView(generics.ListAPIView):
@@ -94,3 +94,44 @@ class ProblemCreateView(generics.CreateAPIView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
+    
+class TestCaseView(generics.CreateAPIView):
+    
+    permission_classes = [CustomIsAdminPermission]
+    queryset = TestCase.objects.all()
+    serializer_class = TestCaseSerializer
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+        ],
+        operation_description="Create a new problem",
+        request_body=TestCaseSerializer,
+        responses={201: TestCaseSerializer()}
+    )
+    def perform_create(self, serializer):
+        id_problem = self.kwargs.get("id")
+        serializer.save(problem_id=id_problem)
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer=serializer)
+        return Response(serializer.data, status=201)
+    
+class TestCasesListView(generics.ListAPIView):
+    permission_classes = [CustomIsAuthenticatedPermission]
+    serializer_class = TestCaseSerializer
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+        ],
+        operation_description="Get a list of test cases for a specific problem",
+        responses={200: TestCaseSerializer(many=True)}
+    )
+    def get(self, request, *args, **kwargs):
+        id_problem = self.kwargs["id"]
+        queryset = TestCase.objects.filter(problem_id=id_problem)
+        serializater = self.get_serializer(queryset, many=True)
+        return Response(serializater.data)

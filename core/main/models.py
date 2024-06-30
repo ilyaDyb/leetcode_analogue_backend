@@ -8,8 +8,13 @@ class Problem(models.Model):
         ("Medium", "Medium"),
         ("Hard", "Hard"),
     ]
+    TYPE_CHOICES = [
+        ("Algorithm", "Algorithm"),
+        ("SQL", "SQL"),
+    ]
     author = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="user_problems")
     title = models.CharField(max_length=50)
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default="Algorithm")
     subtitle = models.CharField(max_length=150)
     description = models.TextField()
     difficulty = models.CharField(max_length=15, choices=DIFFICULTY_CHOICES)

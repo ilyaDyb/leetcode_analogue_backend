@@ -1,15 +1,24 @@
 from rest_framework import serializers
 
-from core.main.models import Problem
+from core.main.models import Problem, TestCase
 
 
 class ProblemSerializer(serializers.ModelSerializer):
-    # id_problem = serializers.SerializerMethodField()
     class Meta:
         model = Problem
         fields = [
-            "id", "author", "title", "subtitle", "description", "difficulty"
+            "id", "author", "title", "type", "subtitle", "description", "difficulty"
         ]
 
-    # def get_id_problem(self, obj):
-    #     return obj.pk
+class TestCaseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TestCase
+        fields = [
+            "input_data", "expected_output"
+        ]        
+
+    # def create(self, validated_data: dict, id_problem: int):
+    #     problem = Problem.objects.get(id=id_problem)
+    #     test_case = TestCase.objects.create(problem=problem, **validated_data)
+    #     return test_case
+    
