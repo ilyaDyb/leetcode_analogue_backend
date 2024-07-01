@@ -46,8 +46,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 
-    'main',
-    'auth_',
+    'core.main',
+    'core.auth_',
 ]
 
 REST_FRAMEWORK = {
@@ -108,7 +108,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'leetcode_analogue.urls'
+ROOT_URLCONF = 'core.leetcode_analogue_backend.urls'
 
 TEMPLATES = [
     {
@@ -126,7 +126,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'leetcode_analogue.wsgi.application'
+WSGI_APPLICATION = 'leetcode_analogue_backend.wsgi.application'
 
 
 # Database
@@ -183,3 +183,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = "auth_.User"
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
