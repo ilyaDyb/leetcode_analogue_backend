@@ -1,6 +1,8 @@
 from rest_framework import generics
 from rest_framework.response import Response
 
+from django.core.cache import cache
+
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
@@ -15,13 +17,22 @@ class ProblemListView(generics.ListAPIView):
     """
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
+    # permission_classes = [CustomIsAuthenticatedPermission]
 
     @swagger_auto_schema(
         operation_description="Get a list of all problems",
         responses={200: ProblemSerializer(many=True)}
     )
     def get(self, request, *args, **kwargs):
-        return super().get(request, *args, **kwargs)
+        cache_key = "all_problems"
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            return Response(cached_data)
+        else:
+            queryset = self.get_queryset()
+            serializer = self.get_serializer(queryset, many=True)
+            cache.set(cache_key, serializer.data, timeout=60*15)
+            return Response(serializer.data)
 
 
 class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -96,7 +107,9 @@ class ProblemCreateView(generics.CreateAPIView):
         return super().post(request, *args, **kwargs)
     
 class TestCaseView(generics.CreateAPIView):
-    
+    """
+    Create testcase
+    """
     permission_classes = [CustomIsAdminPermission]
     queryset = TestCase.objects.all()
     serializer_class = TestCaseSerializer
@@ -120,6 +133,9 @@ class TestCaseView(generics.CreateAPIView):
         return Response(serializer.data, status=201)
     
 class TestCasesListView(generics.ListAPIView):
+    """
+    Get testcases of problem by id
+    """
     permission_classes = [CustomIsAuthenticatedPermission]
     serializer_class = TestCaseSerializer
 

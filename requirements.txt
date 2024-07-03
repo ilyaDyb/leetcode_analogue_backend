@@ -5,3 +5,4 @@ django-cors-headers==4.4.0
 djangorestframework-simplejwt==5.3.1
 redis==5.0.7
 celery==5.4.0
+django-redis==5.4.0
