@@ -20,3 +20,7 @@
 + make a convenient API for getting/changing/creating test cases
 - maybe even use parsing user's some txt or csv files for creating testcases
 - add microservise for compiling user's code in docker contrainer
+- add main app in docker container with docker-compose:
+    + starting API
+    - starting celery
+    - connecting to another container

@@ -6,3 +6,4 @@ djangorestframework-simplejwt==5.3.1
 redis==5.0.7
 celery==5.4.0
 django-redis==5.4.0
+requests==2.32.3
