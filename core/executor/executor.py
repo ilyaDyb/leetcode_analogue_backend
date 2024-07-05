@@ -12,6 +12,7 @@ def execute_user_code(user_code):
 if __name__ == "__main__":
     user_code = sys.argv[1]
     result = execute_user_code(user_code)
+    print(user_code, result)
 
-    response = requests.post('http://127.0.0.1:8000/api/interpreter/receive_result/', json={'result': result})
+    response = requests.get('http://web:8000/api/interpreter/receive_result/')
     print(response.status_code, response.reason)

@@ -1,26 +1,31 @@
 - rename from main to smth
 - extend models
-    - add type
+    + add type
     - add logic to get statistics for user's profile
 - Connect to Postgresql
 + extend README.md (add image with app's architecture)
++ set up celery
+
 - write frontend (https://github.com/ilyaDyb/leetcode_analogue_frontend.git)
     + page of problems 
     + page of single problem
     - profile
     - switching from problem to results
-+ set up celery
+
 - caching:
     + save serialized queryset result in cache
     + update data when a new problem is added with Django signal
     - mb something else
-- compiling the user's code
-- testcases for compiled user's code
+
 - figure out how to keep data's
 + make a convenient API for getting/changing/creating test cases
 - maybe even use parsing user's some txt or csv files for creating testcases
+
 - add microservise for compiling user's code in docker contrainer
-- add main app in docker container with docker-compose:
+    + recieving code (need test)
+    - sending results
+
++ add main app in docker container with docker-compose:
     + starting API
-    - starting celery
-    - connecting to another container
+    + starting celery
+    + connecting to another container

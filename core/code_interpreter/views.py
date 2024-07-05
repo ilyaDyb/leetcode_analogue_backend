@@ -43,7 +43,6 @@ class SubmitCodeView(APIView):
     And if everything is successful, then execution statistics: execution time and RAM
     """
     permission_classes = [CustomIsAuthenticatedPermission]
-
     @swagger_auto_schema(
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,

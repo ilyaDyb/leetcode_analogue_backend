@@ -1,5 +1,11 @@
 version: '3.8'
+
 services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6380:6379"
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -9,8 +15,42 @@ services:
       - "8000:8000"
     depends_on:
       - redis
+    networks:
+      default:
+        aliases:
+          - web
 
-  redis:
-    image: redis:latest
-    ports:
-      - "6380:6379"
+  celery:
+    build: .
+    command: celery -A core.leetcode_analogue_backend worker -P solo --loglevel=info
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - redis
+      - web
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    networks:
+      default:
+        aliases:
+          - celery
+
+  celery-beat:
+    build: .
+    command: celery -A core.leetcode_analogue_backend beat --loglevel=info
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - redis
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+    networks:
+      default:
+        aliases:
+          - celery-beat
+
+networks:
+  default:
+    name: leetcode_network

@@ -1,14 +1,17 @@
 import subprocess
 from celery import shared_task
+import logging
 
 @shared_task
 def run_user_code(user_code):
-    # Используем массив строк для команды и аргументов, чтобы избежать проблем с кавычками
-    command = ['docker', 'run', '--rm', 'code_interpreter_image', 'python', 'executor.py', user_code]
+
+    network_name = "leetcode_network"
+    command = ['docker', 'run', '--rm', '--network', network_name, 'code_interpreter_image', 'python', 'executor.py', user_code]
+    logging.info(f"Running command: {' '.join(command)}")
     result = subprocess.run(command, capture_output=True, text=True)
     
-    print(result.stdout)
+    logging.info(f"Command output: {result.stdout}")
     if result.returncode != 0:
-        print(result.stderr)
+        logging.error(f"Command error: {result.stderr}")
         return result.stderr
     return result.stdout
