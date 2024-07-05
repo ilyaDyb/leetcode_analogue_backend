@@ -11,7 +11,7 @@ Project's stack
 * RPC
 * JWT
 * Docker
-* Flask
+* docker-compose
   
 app's design
 -------------------
