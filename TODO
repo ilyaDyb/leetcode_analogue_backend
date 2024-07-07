@@ -23,7 +23,18 @@
 
 - add microservise for compiling user's code in docker contrainer
     + recieving code (need test)
-    - sending results
+    + sending results
+    - proccessing results
+    - execution time and memory for test cases
+    - good processing of test case results:
+        - raise exception
+        - proccess different types
+        - returning failed testcase
+    - make it more security:
+        - handle dangerous code correctly
+        - block imports
+        - limit resources
+
 
 + add main app in docker container with docker-compose:
     + starting API

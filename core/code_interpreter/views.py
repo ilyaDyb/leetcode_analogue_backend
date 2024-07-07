@@ -1,11 +1,15 @@
+import json
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from django.core import serializers
+
 from core.auth_.permissions import CustomIsAuthenticatedPermission
 from core.executor.tasks import run_user_code
+from core.main.models import TestCase
 
 class RunCodeView(APIView):
     """  
@@ -29,10 +33,12 @@ class RunCodeView(APIView):
     )
     def post(self, request, id_problem):
         user_code = request.data.get('code')
-        print(user_code)
-        task = run_user_code.delay(user_code)
-
-        return Response({"detail": "success"})
+        try:
+            testcases = serializers.serialize('json', TestCase.objects.filter(problem_id=id_problem))
+        except Exception:
+            return Response({"No problem with such id"})
+        run_user_code.delay(str(request.user.id), user_code, json.loads(testcases))
+        return Response({"detail": f"type: {type(json.loads(testcases))} : {json.loads(testcases)}"})
 
 
 

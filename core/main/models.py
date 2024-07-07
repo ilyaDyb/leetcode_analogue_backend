@@ -23,7 +23,7 @@ class Problem(models.Model):
         return f"{self.pk}. {self.title}"
     
 class TestCase(models.Model):
-    problem = models.ForeignKey(to=Problem, on_delete=models.CASCADE)
+    problem = models.ForeignKey(to=Problem, on_delete=models.CASCADE, related_name="testcases")
     input_data = models.CharField(max_length=100, help_text="Input data for test case")
     expected_output = models.CharField(max_length=100, help_text="Outnput data for test case")
 
