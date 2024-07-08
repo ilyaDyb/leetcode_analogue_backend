@@ -114,18 +114,26 @@ class TestCaseView(generics.CreateAPIView):
     queryset = TestCase.objects.all()
     serializer_class = TestCaseSerializer
 
-    @swagger_auto_schema(
-        manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
-        ],
-        operation_description="Create a new problem",
-        request_body=TestCaseSerializer,
-        responses={201: TestCaseSerializer()}
-    )
+    
     def perform_create(self, serializer):
         id_problem = self.kwargs.get("id")
         serializer.save(problem_id=id_problem)
 
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'input_data': openapi.Schema(type=openapi.TYPE_STRING, description='Input data for the test case', example="[1,2,3]"),
+                'expected_output': openapi.Schema(type=openapi.TYPE_STRING, description='Expected output for the test case', example="[1,4,9]"),
+            },
+            required=['input_data', 'expected_output']
+        ),
+        responses={201: TestCaseSerializer()},
+    )
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)

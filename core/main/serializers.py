@@ -7,7 +7,7 @@ class ProblemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Problem
         fields = [
-            "id", "author", "title", "type", "subtitle", "description", "difficulty"
+            "id", "author", "title", "type", "subtitle", "description", "difficulty", "fst_line"
         ]
 
 class TestCaseSerializer(serializers.ModelSerializer):

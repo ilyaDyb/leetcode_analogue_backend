@@ -9,30 +9,31 @@
 - write frontend (https://github.com/ilyaDyb/leetcode_analogue_frontend.git)
     + page of problems 
     + page of single problem
-    - profile
+    - profile with statistics
     - switching from problem to results
 
-- caching:
++ caching:
     + save serialized queryset result in cache
     + update data when a new problem is added with Django signal
-    - mb something else
 
-- figure out how to keep data's
++ figure out how to keep data's
 + make a convenient API for getting/changing/creating test cases
 - maybe even use parsing user's some txt or csv files for creating testcases
 
 - add microservise for compiling user's code in docker contrainer
     + recieving code (need test)
     + sending results
-    - proccessing results
-    - execution time and memory for test cases
+    + proccessing results
+    - + execution time and memory for test cases (memory needed)
+    + saving solutions and checking task's progress
     - good processing of test case results:
-        - raise exception
-        - proccess different types
-        - returning failed testcase
+        + raise exception
+        + proccess different types (need test)
+        + returning failed testcase
+        - something else
     - make it more security:
         - handle dangerous code correctly
-        - block imports
+        + block imports
         - limit resources
 
 

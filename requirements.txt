@@ -7,3 +7,4 @@ redis==5.0.7
 celery==5.4.0
 django-redis==5.4.0
 requests==2.32.3
+memory_profiler==0.61.0
