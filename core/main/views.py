@@ -46,7 +46,7 @@ class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         operation_description="Retrieve a problem by ID",
         responses={200: ProblemSerializer()}
@@ -56,7 +56,7 @@ class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         operation_description="Update a problem by ID",
         request_body=ProblemSerializer,
@@ -67,7 +67,7 @@ class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         operation_description="Partial update a problem by ID",
         request_body=ProblemSerializer,
@@ -78,7 +78,7 @@ class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         operation_description="Delete a problem by ID",
         responses={204: 'No Content'}
@@ -97,7 +97,7 @@ class ProblemCreateView(generics.CreateAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         operation_description="Create a new problem",
         request_body=ProblemSerializer,
@@ -149,13 +149,22 @@ class TestCasesListView(generics.ListAPIView):
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
+            openapi.Parameter('not_full', openapi.IN_QUERY, description="Not full list with 3 obj full list", type=openapi.TYPE_BOOLEAN),
         ],
         operation_description="Get a list of test cases for a specific problem",
         responses={200: TestCaseSerializer(many=True)}
     )
     def get(self, request, *args, **kwargs):
         id_problem = self.kwargs["id"]
-        queryset = TestCase.objects.filter(problem_id=id_problem)
+        not_full = request.query_params.get("not_full")
+
+        print(not_full, type(not_full))
+        if not_full:
+            queryset = TestCase.objects.filter(problem_id=id_problem)[:3]
+        else:
+            queryset = TestCase.objects.filter(problem_id=id_problem)
+
         serializater = self.get_serializer(queryset, many=True)
+
         return Response(serializater.data)

@@ -19,3 +19,12 @@ class SolutionResultSerializer(serializers.ModelSerializer):
             }
         )
         return instance
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        problem = instance.problem
+        representation["problem"] = {
+            "id_problem": problem.id,
+            "title": problem.title
+        }
+        return representation

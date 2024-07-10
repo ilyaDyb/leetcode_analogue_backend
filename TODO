@@ -1,8 +1,8 @@
-- rename from main to smth
-- extend models
++ extend models
     + add type
-    - add logic to get statistics for user's profile
+
 - Connect to Postgresql
+
 + extend README.md (add image with app's architecture)
 + set up celery
 
@@ -10,7 +10,11 @@
     + page of problems 
     + page of single problem
     - profile with statistics
-    - switching from problem to results
+    + - switching from problem to results
+
+- new APIs:
+    + user profile
+    - load testcases from csv and mb xlsx
 
 + caching:
     + save serialized queryset result in cache

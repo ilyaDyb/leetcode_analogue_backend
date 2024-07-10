@@ -10,7 +10,7 @@ from .views import (
 from rest_framework_simplejwt.views import TokenRefreshView
 
 
-app_name = "users"
+app_name = "auth_"
 
 urlpatterns = [
     path("token/", MyTokenObtaionPairView.as_view(), name="token_obtain_pair"),

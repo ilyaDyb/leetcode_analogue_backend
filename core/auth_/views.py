@@ -2,11 +2,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 
 from rest_framework_simplejwt.views import TokenObtainPairView
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken
@@ -15,8 +14,9 @@ from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
 from core.auth_.models import User
-from core.auth_.serializaters import UserCreateSerializer
-from .serializaters import MyTokenObtainPairSerializer
+from core.auth_.permissions import CustomIsAuthenticatedPermission
+from core.auth_.serializers import UserCreateSerializer
+from .serializers import MyTokenObtainPairSerializer
 
 
 class CustomJWTAuthentication(JWTAuthentication):
@@ -34,7 +34,6 @@ class MyTokenObtaionPairView(TokenObtainPairView):
 #     def __init__(self, headers: dict) -> None:
 #         self.token = headers.get("Authorization", None)
     
-#     @property
 #     def get_user_instance(self):
 #         if not self.token:
 #             raise AuthenticationFailed({"detail": "You cannot authenticate without authorization token"}, code=400)
@@ -72,7 +71,7 @@ class LoginView(APIView):
                 'username_or_email': openapi.Schema(type=openapi.TYPE_STRING, example='string'),
                 'password': openapi.Schema(type=openapi.TYPE_STRING, example='string'),
             },
-            required=['password']
+            required=['password', 'username_or_email']
         ),
         responses={201: UserCreateSerializer, 400: 'Bad Request'}
     )
@@ -104,11 +103,14 @@ class LoginView(APIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    """
+    Url for logout users
+    """
+    permission_classes = [CustomIsAuthenticatedPermission]
 
     @swagger_auto_schema(
         manual_parameters=[
-            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING),
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
         request_body=openapi.Schema(
             type=openapi.TYPE_OBJECT,

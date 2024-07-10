@@ -79,14 +79,6 @@ class SubmitCodeView(APIView):
         return Response({"task_id": task.id})
     
 
-class ReceiveResultView(APIView):
-    def post(self, request):
-        result = request.data.get('result')
-        # Here you can handle the result (e.g., save to database)
-        print(f"Received result: {result}")
-        return Response({"detail": "Result received"})
-    
-
 class TaskStatusView(APIView):
     """
     Url for checking result user's code
@@ -116,7 +108,7 @@ class TaskStatusView(APIView):
                 'state': task.state,
                 'result': str(task.info),
             }
-        if response["state"] == "SUCCESS":
+        if response["state"] == "SUCCESS" and "error" not in response["result"]:
             result = response["result"]
             json_result = proccess_result(result)
             response["result"] = json_result

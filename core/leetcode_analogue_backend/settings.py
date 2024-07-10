@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'core.main',
     'core.auth_',
     'core.code_interpreter',
+    'core.users',
 ]
 
 REST_FRAMEWORK = {

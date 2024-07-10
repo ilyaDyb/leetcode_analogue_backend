@@ -4,6 +4,7 @@ import importlib.util
 import os
 import datetime
 
+from memory_profiler import memory_usage
 
 def run_user_code(user_id: str, user_code: str, test_cases: str):
     filename = f'user_code_{user_id}.py'
@@ -16,8 +17,12 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
     
     spec = importlib.util.spec_from_file_location("user_module", filename)
     user_module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(user_module)
-    
+    # spec.loader.exec_module(user_module)
+    try:
+        spec.loader.exec_module(user_module)
+    except SyntaxError as e:
+        os.remove(filename)
+        return {"error": f"Syntax error in user code: {e}"}
     function_name = user_code[3: user_code.index("(")].strip()
     function = getattr(user_module, function_name)
 
@@ -50,11 +55,12 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
         if not passed:
             os.remove(filename)
             return result
-
+    # memory_used = memory_usage()
     end_time = datetime.datetime.now()
     lead_time = end_time - start_time
     lead_time_total_milliseconds = int(str(lead_time)[8:].replace("0", ""))
     result["lead_time_total_milliseconds"] = lead_time_total_milliseconds
+    # result["memory_used"] = memory_used
     os.remove(filename)
     return result
 
