@@ -4,11 +4,24 @@ from core.main.models import Problem, TestCase
 
 
 class ProblemSerializer(serializers.ModelSerializer):
+    count_solutions = serializers.SerializerMethodField()
+    
     class Meta:
         model = Problem
         fields = [
-            "id", "author", "title", "type", "subtitle", "description", "difficulty", "fst_line"
+            "id", "author", "title", "type", "subtitle", "description", "difficulty", "count_solutions", "fst_line"
         ]
+    def get_count_solutions(self, obj):
+        return obj.get_count_solutions_of_problem()
+    
+    def to_representation(self, instance: Problem):
+        representation = super().to_representation(instance)
+        rates = instance.get_rates()
+        representation["rates"] = {
+            "likes": rates["likes"],
+            "dislikes": rates["dislikes"],
+        }
+        return representation
 
 class TestCaseSerializer(serializers.ModelSerializer):
     class Meta:

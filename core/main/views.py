@@ -1,13 +1,16 @@
 from rest_framework import generics
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
 
 from django.core.cache import cache
 
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 
+from core.auth_.models import User
 from core.auth_.permissions import CustomIsAdminPermission, CustomIsAuthenticatedPermission
-from core.main.models import Problem, TestCase
+from core.main.models import Problem, Rate, SolutionResult, TestCase
 from core.main.serializers import ProblemSerializer, TestCaseSerializer
 
 
@@ -139,7 +142,8 @@ class TestCaseView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer=serializer)
         return Response(serializer.data, status=201)
-    
+
+
 class TestCasesListView(generics.ListAPIView):
     """
     Get testcases of problem by id
@@ -159,7 +163,6 @@ class TestCasesListView(generics.ListAPIView):
         id_problem = self.kwargs["id"]
         not_full = request.query_params.get("not_full")
 
-        print(not_full, type(not_full))
         if not_full:
             queryset = TestCase.objects.filter(problem_id=id_problem)[:3]
         else:
@@ -168,3 +171,87 @@ class TestCasesListView(generics.ListAPIView):
         serializater = self.get_serializer(queryset, many=True)
 
         return Response(serializater.data)
+    
+
+class LikeProblemView(APIView):
+    """
+    Url for liking problems
+    """
+    permission_classes = [CustomIsAuthenticatedPermission]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
+        ],
+        operation_description="Like a problem",
+        responses={
+            200: "OK",
+            201: "Created",
+            205: "Reset Content",
+            404: "Not Found",
+            400: "Bad Request",
+        }
+    )
+    def post(self, request, problem_id, user_id):
+        try:
+            problem = Problem.objects.get(pk=problem_id)
+            user = User.objects.get(pk=user_id)
+        except (Problem.DoesNotExist, User.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        if not SolutionResult.objects.filter(problem=problem, user=user).exists():
+            return Response({"error": "You need to solve this problem to decide whether you like it or not"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        rate, created = Rate.objects.get_or_create(user=user, problem=problem)
+        
+        if created or rate.rate_type != Rate.LIKE:
+            rate.rate_type = Rate.LIKE
+            rate.save()
+            if not created:
+                return Response(status=status.HTTP_205_RESET_CONTENT)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            rate.delete()
+            return Response(status=status.HTTP_200_OK)
+
+
+class DislikeProblemView(APIView):
+    """
+    Url for disliking problems
+    """
+    permission_classes = [CustomIsAuthenticatedPermission]
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
+        ],
+        operation_description="Dislike a problem",
+        responses={
+            200: "OK",
+            201: "Created",
+            205: "Reset Content",
+            404: "Not Found",
+            400: "Bad Request",
+        }
+    )
+    def post(self, request, problem_id, user_id):
+        try:
+            problem = Problem.objects.get(pk=problem_id)
+            user = User.objects.get(pk=user_id)
+        except (Problem.DoesNotExist, User.DoesNotExist):
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        if not SolutionResult.objects.filter(problem=problem, user=user).exists():
+            return Response({"error": "You need to solve this problem to decide whether you like it or not"}, status=status.HTTP_400_BAD_REQUEST)
+
+        rate, created = Rate.objects.get_or_create(user=user, problem=problem)
+
+        if created or rate.rate_type != Rate.DISLIKE:
+            rate.rate_type = Rate.DISLIKE
+            rate.save()
+            if not created:
+                return Response(status=status.HTTP_205_RESET_CONTENT)
+            return Response(status=status.HTTP_201_CREATED)
+        else:
+            rate.delete()
+            return Response(status=status.HTTP_200_OK)
