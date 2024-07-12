@@ -8,6 +8,7 @@ from core.main.models import SolutionResult
 class UserProfileSerializer(serializers.ModelSerializer):
     solved_problems = serializers.SerializerMethodField()
     was_complited_problems = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = ["id", "username", "email", "was_complited_problems", "solved_problems"]
@@ -35,3 +36,12 @@ class UserProfileSolutionResultSerializer(serializers.ModelSerializer):
             "title": problem.title
         }
         return representation
+    
+
+class TopUserSerializer(serializers.ModelSerializer):
+    position = serializers.IntegerField()
+    solved_problems = serializers.IntegerField()
+
+    class Meta:
+        model = User
+        fields = ["position", "id", "username", "solved_problems"]

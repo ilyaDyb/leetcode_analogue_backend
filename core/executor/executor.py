@@ -4,7 +4,7 @@ import importlib.util
 import os
 import datetime
 
-from memory_profiler import memory_usage
+# from memory_profiler import memory_usage
 
 def run_user_code(user_id: str, user_code: str, test_cases: str):
     filename = f'user_code_{user_id}.py'

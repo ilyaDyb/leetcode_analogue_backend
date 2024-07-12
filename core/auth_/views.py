@@ -58,6 +58,15 @@ class RegisterView(APIView):
         responses={201: UserCreateSerializer, 400: 'Bad Request'}
     )
     def post(self, request):
+        # email = "@mail.ru"
+        # password = "qwertyuiop2014"
+        # for i in range(100):
+        #     username = "test" + str(i)
+        #     user = User(
+        #         username=f"{username}", email=f"{username}{email}", password=password
+        #     )
+        #     user.save()
+        #     user.set_password(user.password)
         serializer = UserCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()

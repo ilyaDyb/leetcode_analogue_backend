@@ -12,6 +12,7 @@ from core.auth_.models import User
 from core.auth_.permissions import CustomIsAdminPermission, CustomIsAuthenticatedPermission
 from core.main.models import Problem, Rate, SolutionResult, TestCase
 from core.main.serializers import ProblemSerializer, TestCaseSerializer
+from core.utils import CustomPagination
 
 
 class ProblemListView(generics.ListAPIView):
@@ -20,13 +21,14 @@ class ProblemListView(generics.ListAPIView):
     """
     queryset = Problem.objects.all()
     serializer_class = ProblemSerializer
+    pagination_class = CustomPagination
     # permission_classes = [CustomIsAuthenticatedPermission]
 
-    @swagger_auto_schema(
-        operation_description="Get a list of all problems",
-        responses={200: ProblemSerializer(many=True)}
-    )
-    def get(self, request, *args, **kwargs):
+    # @swagger_auto_schema(
+    #     operation_description="Get a list of all problems",
+    #     responses={200: ProblemSerializer(many=True)}
+    # )
+    def get_quryset(self):
         cache_key = "all_problems"
         cached_data = cache.get(cache_key)
         if cached_data:

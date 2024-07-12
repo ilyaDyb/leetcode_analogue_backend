@@ -43,7 +43,7 @@ class TestCase(models.Model):
 
 class SolutionResult(models.Model):
     problem = models.ForeignKey(to=Problem, related_name='results', on_delete=models.CASCADE)
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE)
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='results')
     lead_time = models.IntegerField(help_text="Execution time in milliseconds")
     memory_used = models.DecimalField(max_digits=5, decimal_places=2, help_text="Memory used in MB")
     user_code = models.CharField(max_length=2000)

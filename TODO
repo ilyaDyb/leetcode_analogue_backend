@@ -10,11 +10,7 @@
     + page of problems 
     + page of single problem
     - profile with statistics
-    + - switching from problem to results
-
-- new APIs:
-    + user profile
-    - load testcases from csv and mb xlsx
+    - + switching from problem to results
 
 + caching:
     + save serialized queryset result in cache
@@ -32,7 +28,7 @@
     + saving solutions and checking task's progress
     - good processing of test case results:
         + raise exception
-        + proccess different types (need test)
+        - ----------- !!!! urgent test many types !!!! proccess different types (need test)
         + returning failed testcase
         - something else
     - make it more security:
@@ -48,3 +44,7 @@
 
 + add likes and dislikes for problems
 + add count solutions
++ top users list
++ make universal pagination for different ulrs
++ user profile
+- load testcases from csv and mb xlsx
