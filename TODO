@@ -28,7 +28,7 @@
     + saving solutions and checking task's progress
     - good processing of test case results:
         + raise exception
-        - ----------- !!!! urgent test many types !!!! proccess different types (need test)
+        + -  ----------- !!!! urgent test many types !!!! proccess different types (need test)
         + returning failed testcase
         - something else
     - make it more security:

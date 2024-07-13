@@ -108,10 +108,10 @@ class TaskStatusView(APIView):
                 'state': task.state,
                 'result': str(task.info),
             }
-        if response["state"] == "SUCCESS" and "error" not in response["result"]:
-            result = response["result"]
-            json_result = proccess_result(result)
-            response["result"] = json_result
+        # if response["state"] == "SUCCESS" and "error" not in response["result"]:
+        #     result = response["result"]
+        #     json_result = proccess_result(result)
+        #     response["result"] = json_result
         return Response(response)
     
 

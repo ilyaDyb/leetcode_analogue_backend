@@ -50,7 +50,7 @@ class SolutionView(generics.RetrieveAPIView):
 
 class TopUsersListView(generics.ListAPIView):
     """
-    
+    Url which return top users list
     """
     permission_classes = [CustomIsAuthenticatedPermission]
     serializer_class = TopUserSerializer
