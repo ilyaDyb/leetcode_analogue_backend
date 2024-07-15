@@ -18,7 +18,6 @@
 
 + figure out how to keep data's
 + make a convenient API for getting/changing/creating test cases
-- maybe even use parsing user's some txt or csv files for creating testcases
 
 - add microservise for compiling user's code in docker contrainer
     + recieving code (need test)
@@ -26,11 +25,10 @@
     + proccessing results
     - + execution time and memory for test cases (memory needed)
     + saving solutions and checking task's progress
-    - good processing of test case results:
+    + good processing of test case results:
         + raise exception
         + -  ----------- !!!! urgent test many types !!!! proccess different types (need test)
         + returning failed testcase
-        - something else
     - make it more security:
         - handle dangerous code correctly
         + block imports
@@ -47,4 +45,4 @@
 + top users list
 + make universal pagination for different ulrs
 + user profile
-- load testcases from csv and mb xlsx
++ load testcases from txt file

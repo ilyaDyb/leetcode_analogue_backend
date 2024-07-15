@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
+from rest_framework.parsers import FormParser, MultiPartParser
 
 from django.core.cache import cache
 
@@ -12,6 +13,7 @@ from core.auth_.models import User
 from core.auth_.permissions import CustomIsAdminPermission, CustomIsAuthenticatedPermission
 from core.main.models import Problem, Rate, SolutionResult, TestCase
 from core.main.serializers import ProblemSerializer, TestCaseSerializer
+from core.main.utils import file_is_valid, read_and_convert_file_to_json
 from core.utils import CustomPagination
 
 
@@ -257,3 +259,33 @@ class DislikeProblemView(APIView):
         else:
             rate.delete()
             return Response(status=status.HTTP_200_OK)
+
+class LoadTestCasesView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+    permission_classes = [CustomIsAdminPermission]
+
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
+            openapi.Parameter('file', openapi.IN_FORM, description="File with testcases", type=openapi.TYPE_FILE, required=True),
+        ],
+    )
+    def post(self, request, *args, **kwargs):
+        if 'file' not in request.data:
+            return Response({"error": "No file provided"}, status=400)
+        
+        problem_id = kwargs.get("id")
+        file = request.data['file']
+        file_name = file.name
+    
+        if file_is_valid(file, file_name):
+            testcases = read_and_convert_file_to_json(file, problem_id)
+            if testcases is False:
+                return Response({"error": "Invalid format in file"}, status=400)
+            test_cases = [TestCase(**data) for data in testcases]
+            non_serialized_data = TestCase.objects.bulk_create(test_cases)
+            serialized_data = TestCaseSerializer(non_serialized_data, many=True)
+            return Response({"message": "Test cases uploaded successfully", "testcases": serialized_data.data})
+        else:
+            return Response({"error": "Invalid file"}, status=400)
