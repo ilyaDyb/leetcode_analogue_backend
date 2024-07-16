@@ -14,7 +14,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ["id", "username", "email", "was_complited_problems", "solved_problems"]
 
     def get_solved_problems(self, obj):
-        solved_problems = SolutionResult.objects.filter(user=obj)
+        solved_problems = SolutionResult.objects.filter(user=obj).order_by("-executed_at")
 
         return UserProfileSolutionResultSerializer(solved_problems, many=True).data
     
@@ -26,14 +26,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
 class UserProfileSolutionResultSerializer(serializers.ModelSerializer):
     class Meta:
         model = SolutionResult
-        fields = ["id", "lead_time", "memory_used", "passed"]
+        fields = ["id", "executed_at", "lead_time", "memory_used", "passed"]
 
     def to_representation(self, obj):
         representation = super().to_representation(obj)
         problem = obj.problem
         representation['problem'] = {
             "id": problem.id,
-            "title": problem.title
+            "title": problem.title,
         }
         return representation
     

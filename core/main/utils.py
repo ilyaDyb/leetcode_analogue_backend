@@ -4,7 +4,7 @@ def file_is_valid(file, file_name) -> bool:
 
     file.seek(0)
     fst_line = file.readline().decode('utf-8')
-    if "|" not in fst_line or ";" not in fst_line:
+    if "|" not in fst_line:
         return False
 
     return True

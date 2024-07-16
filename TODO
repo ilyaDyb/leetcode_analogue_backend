@@ -6,11 +6,11 @@
 + extend README.md (add image with app's architecture)
 + set up celery
 
-- write frontend (https://github.com/ilyaDyb/leetcode_analogue_frontend.git)
++ write frontend (https://github.com/ilyaDyb/leetcode_analogue_frontend.git)
     + page of problems 
     + page of single problem
-    - profile with statistics
-    - + switching from problem to results
+    + profile with statistics
+    + switching from problem to results
 
 + caching:
     + save serialized queryset result in cache
@@ -46,3 +46,4 @@
 + make universal pagination for different ulrs
 + user profile
 + load testcases from txt file
++ more security

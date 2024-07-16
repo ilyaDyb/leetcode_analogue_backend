@@ -27,8 +27,8 @@ class TestCaseSerializer(serializers.ModelSerializer):
     class Meta:
         model = TestCase
         fields = [
-            "input_data", "expected_output"
-        ]        
+            "problem", "input_data", "expected_output"
+        ]   
 
     # def create(self, validated_data: dict, id_problem: int):
     #     problem = Problem.objects.get(id=id_problem)

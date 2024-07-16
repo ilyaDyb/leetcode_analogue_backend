@@ -94,13 +94,11 @@ class ProblemRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         return super().delete(request, *args, **kwargs)
 
 
-class ProblemCreateView(generics.CreateAPIView):
+class ProblemCreateView(APIView):
     """
     Create a new problem
     """
     permission_classes = [CustomIsAdminPermission]
-    queryset = Problem.objects.all()
-    serializer_class = ProblemSerializer
 
     @swagger_auto_schema(
         manual_parameters=[
@@ -111,42 +109,40 @@ class ProblemCreateView(generics.CreateAPIView):
         responses={201: ProblemSerializer()}
     )
     def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
+        request.data["author"] = request.user.id
+        serializer = ProblemSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
     
-class TestCaseView(generics.CreateAPIView):
+class TestCaseView(APIView):
     """
     Create testcase
     """
     permission_classes = [CustomIsAdminPermission]
-    queryset = TestCase.objects.all()
-    serializer_class = TestCaseSerializer
-
-    
-    def perform_create(self, serializer):
-        id_problem = self.kwargs.get("id")
-        serializer.save(problem_id=id_problem)
-
 
     @swagger_auto_schema(
         manual_parameters=[
             openapi.Parameter('Authorization', openapi.IN_HEADER, description="Bearer token", type=openapi.TYPE_STRING, required=True),
         ],
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                'input_data': openapi.Schema(type=openapi.TYPE_STRING, description='Input data for the test case', example="[1,2,3]"),
-                'expected_output': openapi.Schema(type=openapi.TYPE_STRING, description='Expected output for the test case', example="[1,4,9]"),
-            },
-            required=['input_data', 'expected_output']
-        ),
-        responses={201: TestCaseSerializer()},
+        operation_description="Create a new test case",
+        request_body=TestCaseSerializer,
+        responses={201: TestCaseSerializer()}
     )
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer=serializer)
-        return Response(serializer.data, status=201)
+        problem_id = request.data.get('problem')
+        user = self.request.user
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist:
+            return Response({"error": "Problem does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
+        if problem.author != user:
+            return Response({"error": "You are not the author of this problem."}, status=status.HTTP_403_FORBIDDEN)
+        serializer = TestCaseSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class TestCasesListView(generics.ListAPIView):
     """
@@ -272,10 +268,19 @@ class LoadTestCasesView(APIView):
         ],
     )
     def post(self, request, *args, **kwargs):
+        problem_id = kwargs.get("id")
+        user = self.request.user
+        try:
+            problem = Problem.objects.get(id=problem_id)
+        except Problem.DoesNotExist:
+            return Response({"error": "Problem does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        if problem.author != user:
+            return Response({"error": "You are not the author of this problem."}, status=status.HTTP_403_FORBIDDEN)
+
         if 'file' not in request.data:
             return Response({"error": "No file provided"}, status=400)
         
-        problem_id = kwargs.get("id")
         file = request.data['file']
         file_name = file.name
     

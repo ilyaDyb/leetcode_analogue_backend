@@ -33,9 +33,9 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
         os.remove(filename)
         return {'error': str(e)}
 
-    start_time = datetime.datetime.now()
-
+    max_lead_time = 0
     for i, case in enumerate(test_cases):
+        start_time = datetime.datetime.now()
         input_data = case['fields']['input_data']
         expected_output = case['fields']['expected_output']
         args = None
@@ -65,12 +65,17 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
         except Exception as e:
             result = str(e)
             passed = False
+        end_time = datetime.datetime.now()
+        lead_time = end_time - start_time
+        lead_time_total_milliseconds = int(str(lead_time)[8:].replace("0", ""))
+        max_lead_time = max(lead_time_total_milliseconds, max_lead_time)
         result = {
             "input": input_data,
             "expected": expected_output,
             "result": result,
             "passed": passed,
             "number": i,
+            "lead_time_total_milliseconds": max_lead_time,
         }
 
         if not passed:
@@ -78,10 +83,6 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
             return json.dumps(result)
 
     # memory_used = memory_usage()
-    end_time = datetime.datetime.now()
-    lead_time = end_time - start_time
-    lead_time_total_milliseconds = int(str(lead_time)[8:].replace("0", ""))
-    result["lead_time_total_milliseconds"] = lead_time_total_milliseconds
     os.remove(filename)
     return json.dumps(result)
 
