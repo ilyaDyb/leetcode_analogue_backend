@@ -288,6 +288,7 @@ class LoadTestCasesView(APIView):
             testcases = read_and_convert_file_to_json(file, problem_id)
             if testcases is False:
                 return Response({"error": "Invalid format in file"}, status=400)
+            # return Response({"message": testcases})
             test_cases = [TestCase(**data) for data in testcases]
             non_serialized_data = TestCase.objects.bulk_create(test_cases)
             serialized_data = TestCaseSerializer(non_serialized_data, many=True)

@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from django.db.models import Count
+from django.db.models import Count, F, Window
+from django.db.models.functions import RowNumber
 
 from core.auth_.models import User
 from core.main.models import SolutionResult
@@ -8,10 +9,11 @@ from core.main.models import SolutionResult
 class UserProfileSerializer(serializers.ModelSerializer):
     solved_problems = serializers.SerializerMethodField()
     was_complited_problems = serializers.SerializerMethodField()
+    rank = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        fields = ["id", "username", "email", "was_complited_problems", "solved_problems"]
+        fields = ["id", "username", "email", "was_complited_problems", "solved_problems", "rank"]
 
     def get_solved_problems(self, obj):
         solved_problems = SolutionResult.objects.filter(user=obj).order_by("-executed_at")
@@ -21,6 +23,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_was_complited_problems(self, obj):
         complited_problems = SolutionResult.objects.filter(user=obj).aggregate(count=Count("id"))
         return complited_problems["count"]
+    
+    def get_rank(self, obj):
+        user_with_rank = User.objects.annotate(
+            solved_problems=Count("results"),
+            position=Window(
+                expression=RowNumber(),
+                order_by=F('solved_problems').desc()
+            )
+        ).get(pk=obj.id)
+        return user_with_rank.position
     
 
 class UserProfileSolutionResultSerializer(serializers.ModelSerializer):

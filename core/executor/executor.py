@@ -47,14 +47,15 @@ def run_user_code(user_id: str, user_code: str, test_cases: str):
             expected_output = json.loads(expected_output)
         except json.JSONDecodeError:
             pass
-        if ";" in input_data:
-            args = []
-            list_args = input_data.split(";")
-            for arg in list_args:
-                try:
-                    args.append(json.loads(arg))
-                except json.JSONDecodeError:
-                    args.append(arg)
+        if isinstance(input_data, str):    
+            if ";" in input_data:
+                args = []
+                list_args = input_data.split(";")
+                for arg in list_args:
+                    try:
+                        args.append(json.loads(arg))
+                    except json.JSONDecodeError:
+                        args.append(arg)
         try:
             if args:
                 result = function(*args)

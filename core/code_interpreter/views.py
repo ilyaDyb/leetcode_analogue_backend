@@ -15,7 +15,6 @@ from core.code_interpreter.serializers import SolutionResultSerializer
 from core.executor.tasks import run_user_code
 from core.main.models import TestCase
 
-from .proccessing_json import proccess_result
 
 class RunCodeView(APIView):
     """  

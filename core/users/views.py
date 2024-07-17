@@ -1,4 +1,6 @@
-from django.db.models import Count
+from django.db.models import Count, Window, F
+from django.db.models.functions import RowNumber
+
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import generics
@@ -65,9 +67,11 @@ class TopUsersListView(generics.ListAPIView):
         operation_description="Retrieve a list of top users with their positions in the ranking."
     )
     def get_queryset(self):
-        top_users = User.objects.annotate(solved_problems=Count("results")).order_by("-solved_problems")
-        ranked_users = [
-            {"position": index + 1, "user_id": user.id, "username": user.username, "solved_problems": user.solved_problems}
-            for index, user in enumerate(top_users)
-        ]
-        return ranked_users
+        top_users = User.objects.annotate(
+            solved_problems=Count("results"),
+            position=Window(
+                expression=RowNumber(),
+                order_by=F('solved_problems').desc()
+            )
+        ).order_by("-solved_problems")
+        return top_users
